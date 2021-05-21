@@ -36,6 +36,7 @@ public class ReportCheckerImpl implements ReportChecker {
         return sb.toString();
     }
 
+    @Override
     public Addressee checkSender(String senderFromFile) {
         Addressee sender = MockStarter.findAddresseeByName(senderFromFile);
         if (sender == null) {
@@ -47,6 +48,7 @@ public class ReportCheckerImpl implements ReportChecker {
         return sender;
     }
 
+    @Override
     public Addressee checkReceiver(String receiverFromFile) {
         Addressee receiver = MockStarter.findAddresseeByName(receiverFromFile);
         if (receiver == null) {
@@ -58,6 +60,7 @@ public class ReportCheckerImpl implements ReportChecker {
         return receiver;
     }
 
+    @Override
     public String checkName(String nameFromFile) {
         if (nameFromFile.isBlank()) {
             sb.append("Некорректно указано название. Оно не может быть не проинициализированным или пустым;\n");
@@ -67,6 +70,7 @@ public class ReportCheckerImpl implements ReportChecker {
         return nameFromFile;
     }
 
+    @Override
     public Type checkType(String typeFromFile) {
         Type type = MockStarter.findTypeByName(typeFromFile);
         if (type == null) {
@@ -77,6 +81,7 @@ public class ReportCheckerImpl implements ReportChecker {
         return type;
     }
 
+    @Override
     public LocalDateTime checkDateTime(String dateTimeFromFile) {
         LocalDateTime sendingDateTime = null;
         try {
@@ -89,6 +94,7 @@ public class ReportCheckerImpl implements ReportChecker {
         return sendingDateTime;
     }
 
+    @Override
     public Cipher checkCipher(String cipherFromFile) {
         Cipher cipher = MockStarter.findCipherByName(cipherFromFile);
         if (cipher == null) {
@@ -99,6 +105,7 @@ public class ReportCheckerImpl implements ReportChecker {
         return cipher;
     }
 
+    @Override
     public LocalTime checkStartTime(String timeFromFile) {
         LocalTime time;
         try {
@@ -112,6 +119,7 @@ public class ReportCheckerImpl implements ReportChecker {
         return time;
     }
 
+    @Override
     public LocalTime checkEndTime(String timeFromFile) {
         LocalTime time;
         try {
@@ -124,6 +132,7 @@ public class ReportCheckerImpl implements ReportChecker {
         return time;
     }
 
+    @Override
     public WorkingMode checkMode(String modeFromFile) {
         Integer modeNumber;
         try {
