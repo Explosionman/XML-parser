@@ -1,10 +1,7 @@
 package ru.rybinskov.service.ParsingService;
 
 import ru.rybinskov.MockStarter;
-import ru.rybinskov.entity.Addressee;
-import ru.rybinskov.entity.Cipher;
-import ru.rybinskov.entity.Type;
-import ru.rybinskov.entity.WorkingMode;
+import ru.rybinskov.entity.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -38,6 +35,11 @@ public class ReportCheckerImpl implements ReportChecker {
 
     @Override
     public Addressee checkSender(String senderFromFile) {
+        if (senderFromFile == null) {
+            sb.append("Не указан Отправитель.\n");
+            changeStatus();
+            return null;
+        }
         Addressee sender = MockStarter.findAddresseeByName(senderFromFile);
         if (sender == null) {
             sb.append("Некорректно указано имя отправителя. Отправитель: \"").append(senderFromFile)
@@ -50,6 +52,11 @@ public class ReportCheckerImpl implements ReportChecker {
 
     @Override
     public Addressee checkReceiver(String receiverFromFile) {
+        if (receiverFromFile == null) {
+            sb.append("Не указан Получатель.\n");
+            changeStatus();
+            return null;
+        }
         Addressee receiver = MockStarter.findAddresseeByName(receiverFromFile);
         if (receiver == null) {
             sb.append("Некорректно указано имя получателя. Получатель \"").append(receiverFromFile)
@@ -62,8 +69,8 @@ public class ReportCheckerImpl implements ReportChecker {
 
     @Override
     public String checkName(String nameFromFile) {
-        if (nameFromFile.isBlank()) {
-            sb.append("Некорректно указано название. Оно не может быть не проинициализированным или пустым;\n");
+        if (nameFromFile == null || nameFromFile.isBlank()) {
+            sb.append("Не указано Название.\n");
             changeStatus();
             return null;
         }
@@ -72,12 +79,18 @@ public class ReportCheckerImpl implements ReportChecker {
 
     @Override
     public Type checkType(String typeFromFile) {
+        if (typeFromFile == null) {
+            sb.append("Не указан Тип\n");
+            changeStatus();
+            return null;
+        }
         Type type = MockStarter.findTypeByName(typeFromFile);
         if (type == null) {
             sb.append("Некорректно указан тип. Тип \"").append(typeFromFile).append("\" не найден в базе;\n");
             changeStatus();
             return null;
         }
+
         return type;
     }
 
@@ -85,9 +98,14 @@ public class ReportCheckerImpl implements ReportChecker {
     public LocalDateTime checkDateTime(String dateTimeFromFile) {
         LocalDateTime sendingDateTime = null;
         try {
-            sendingDateTime = LocalDateTime.parse(dateTimeFromFile, dateTimeFormatter);
+            if (dateTimeFromFile != null) {
+                sendingDateTime = LocalDateTime.parse(dateTimeFromFile, dateTimeFormatter);
+            } else {
+                sb.append("Не указана Дата_время_отправления;\n");
+                changeStatus();
+            }
         } catch (DateTimeParseException e) {
-            sb.append("Некорректно указана <Дата_время_отправления>. Значение \"").
+            sb.append("Некорректно указана Дата_время_отправления. Значение \"").
                     append(dateTimeFromFile).append("\" не устраивает ").append("согласованный шаблон HH:mm:ss dd.MM.yyyy;\n");
             changeStatus();
         }
@@ -111,7 +129,7 @@ public class ReportCheckerImpl implements ReportChecker {
         try {
             time = LocalTime.parse(timeFromFile, timeFormatter);
         } catch (DateTimeParseException e) {
-            sb.append("Некорректно указано время в <Начало_СС>. Значение \"").
+            sb.append("Некорректно указано <Начало_СС>. Значение \"").
                     append(timeFromFile).append("\" не устраивает ").append("согласованный шаблон HH:mm:ss;\n");
             changeStatus();
             return null;
@@ -125,7 +143,7 @@ public class ReportCheckerImpl implements ReportChecker {
         try {
             time = LocalTime.parse(timeFromFile, timeFormatter);
         } catch (DateTimeParseException e) {
-            sb.append("Некорректно указано время в <Окончание_СС>. Значение \"").
+            sb.append("Некорректно указано <Окончание_СС>. Значение \"").
                     append(timeFromFile).append("\" не устраивает ").append("согласованный шаблон HH:mm:ss;\n");
             return null;
         }
@@ -149,5 +167,30 @@ public class ReportCheckerImpl implements ReportChecker {
             return null;
         }
         return mode;
+    }
+
+    @Override
+    public void checkDeviceInfoBeforeAdd(DeviceInfo deviceInfo) {
+        if (deviceInfo.getName() == null) {
+            sb.append("Не указано <Название> в <СС>\n");
+            changeStatus();
+        }
+        if (deviceInfo.getCipher() == null) {
+            sb.append("Не указан <Шифр>\n");
+            changeStatus();
+        }
+        if (deviceInfo.getStartTime() == null) {
+            sb.append("Не указано <Начало_СС>\n");
+            changeStatus();
+        }
+        if (deviceInfo.getEndTime() == null) {
+            sb.append("Не указано <Окончание_СС>\n");
+            changeStatus();
+        }
+        if (deviceInfo.getModeList() == null) {
+            sb.append("Не указано <Режимы_работы_ТС>");
+            changeStatus();
+        }
+
     }
 }

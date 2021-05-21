@@ -1,9 +1,6 @@
 package ru.rybinskov.service.ParsingService;
 
-import ru.rybinskov.entity.Addressee;
-import ru.rybinskov.entity.Cipher;
-import ru.rybinskov.entity.Type;
-import ru.rybinskov.entity.WorkingMode;
+import ru.rybinskov.entity.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -26,5 +23,7 @@ public interface ReportChecker {
     LocalTime checkEndTime(String timeFromFile);
 
     WorkingMode checkMode(String modeFromFile);
+
+    void checkDeviceInfoBeforeAdd(DeviceInfo deviceInfo);
 
 }

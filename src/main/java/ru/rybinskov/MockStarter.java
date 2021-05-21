@@ -50,6 +50,8 @@ public final class MockStarter {
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
+//        Оставил для просмотра сохранённых объектов если возникнет желание посмотреть
+//        getReportList().forEach(System.out::println);
     }
 
     public static List<Report> getReportList() {

@@ -29,6 +29,7 @@ public class ReportHandler extends DefaultHandler {
 
     @Override
     public void endDocument() {
+        reportChecker.checkDeviceInfoBeforeAdd(deviceInfo);
         if (reportChecker.isCorrectReport()) {
             report.setDeviceInfo(deviceInfo);
             MockStarter.getReportList().add(report);
@@ -65,7 +66,7 @@ public class ReportHandler extends DefaultHandler {
     @Override
     public void characters(char[] ch, int start, int length) {
         String text = new String(ch, start, length);
-        if (text.contains("<") || currentElement == null) {
+        if (currentElement == null) {
             return;
         }
         if ("Название".equals(currentElement)) {

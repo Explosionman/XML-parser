@@ -14,14 +14,6 @@ public class DeviceInfo {
     public DeviceInfo() {
     }
 
-    public DeviceInfo(String name, Cipher cipher, LocalTime startTime, LocalTime endTime, List<WorkingMode> modeList) {
-        this.name = name;
-        this.cipher = cipher;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.modeList = modeList;
-    }
-
     public String getName() {
         return name;
     }
@@ -54,12 +46,8 @@ public class DeviceInfo {
         this.endTime = endTime;
     }
 
-    public List<WorkingMode> getModeList(List<Integer> modes) {
+    public List<WorkingMode> getModeList() {
         return modeList;
-    }
-
-    public void setModeList(List<WorkingMode> modeList) {
-        this.modeList = modeList;
     }
 
     public void addMode(WorkingMode mode) {
