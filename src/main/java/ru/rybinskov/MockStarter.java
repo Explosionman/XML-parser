@@ -43,9 +43,9 @@ public final class MockStarter {
         try {
             for (int i = 1; i < 5; i++) {
                 filePath = "src/main/resources/file" + i + ".xml";
-                ParsingServiceImpl parsingService1 = new ParsingServiceImpl(filePath, "Report");
-                parsingService1.getReportHandler().events.subscribe(new ParseResultListener());
-                parsingService1.parseXML();
+                ParsingServiceImpl parsingService = new ParsingServiceImpl(filePath, "Report");
+                parsingService.getReportHandler().events.subscribe(new ParseResultListener());
+                parsingService.parseXML();
             }
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
