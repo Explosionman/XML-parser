@@ -2,7 +2,7 @@ package ru.rybinskov.service.ParsingService;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.helpers.DefaultHandler;
-import ru.rybinskov.dao.MockDB;
+import ru.rybinskov.MockStarter;
 import ru.rybinskov.entity.*;
 import ru.rybinskov.service.SubscribeService.EventManager;
 
@@ -20,7 +20,7 @@ public class ReportHandler extends DefaultHandler {
     private String currentElement = "";
     private Report report;
     private DeviceInfo deviceInfo;
-    private boolean isCorrectReport = true;
+    private boolean isCorrectReport;
     public EventManager events;
 
     public ReportHandler() {
@@ -29,6 +29,7 @@ public class ReportHandler extends DefaultHandler {
 
     @Override
     public void startDocument() {
+        isCorrectReport = true;
         sb = new StringBuilder();
         report = new Report();
         deviceInfo = new DeviceInfo();
@@ -38,7 +39,7 @@ public class ReportHandler extends DefaultHandler {
     public void endDocument() {
         if (isCorrectReport) {
             report.setDeviceInfo(deviceInfo);
-            MockDB.getReportList().add(report);
+            MockStarter.getReportList().add(report);
         }
         events.notify(sb.toString());
         report = null;
@@ -83,9 +84,9 @@ public class ReportHandler extends DefaultHandler {
         } else if ("Начало_СС".equals(currentElement)) {
             checkStartTime(text);
         } else if ("Окончание_СС".equals(currentElement)) {
-            deviceInfo.setEndTime(LocalTime.parse(text));
+            checkEndTime(text);
         } else if ("Режим_работы_ТС".equals(currentElement)) {
-            deviceInfo.addMode(new WorkingMode(Integer.parseInt(text)));
+            checkMode(text);
         }
     }
 
@@ -94,7 +95,7 @@ public class ReportHandler extends DefaultHandler {
     }
 
     private Addressee checkSender(String senderFromFile) {
-        Addressee sender = MockDB.findAddresseeByName(senderFromFile);
+        Addressee sender = MockStarter.findAddresseeByName(senderFromFile);
         if (sender == null) {
             sb.append("Некорректно указано имя отправителя. Отправитель: \"").append(senderFromFile)
                     .append("\" не найден в базе;\n");
@@ -105,7 +106,7 @@ public class ReportHandler extends DefaultHandler {
     }
 
     private Addressee checkReceiver(String receiverFromFile) {
-        Addressee receiver = MockDB.findAddresseeByName(receiverFromFile);
+        Addressee receiver = MockStarter.findAddresseeByName(receiverFromFile);
         if (receiver == null) {
             sb.append("Некорректно указано имя получателя. Получатель \"").append(receiverFromFile)
                     .append("\" не найден в базе;\n");
@@ -125,7 +126,7 @@ public class ReportHandler extends DefaultHandler {
     }
 
     private Type checkType(String typeFromFile) {
-        Type type = MockDB.findTypeByName(typeFromFile);
+        Type type = MockStarter.findTypeByName(typeFromFile);
         if (type == null) {
             sb.append("Некорректно указан тип. Тип \"").append(typeFromFile).append("\" не найден в базе;\n");
             changeStatus();
@@ -139,22 +140,20 @@ public class ReportHandler extends DefaultHandler {
         try {
             sendingDateTime = LocalDateTime.parse(dateTimeFromFile, dateTimeFormatter);
         } catch (DateTimeParseException e) {
-            sb.append("Некорректно указана дата_время_отправления. Значение \"").
+            sb.append("Некорректно указана <Дата_время_отправления>. Значение \"").
                     append(dateTimeFromFile).append("\" не устраивает ").append("согласованный шаблон HH:mm:ss dd.MM.yyyy;\n");
-        } finally {
             changeStatus();
         }
         return sendingDateTime;
     }
 
     private void checkCipher(String cipherFromFile) {
-        Cipher cipher = MockDB.findCipherByName(cipherFromFile);
+        Cipher cipher = MockStarter.findCipherByName(cipherFromFile);
         if (cipher == null) {
             sb.append("Некорректно указан <Шифр>. Шифр \"").append(cipherFromFile).append("\" не найден в базе;\n");
             changeStatus();
-        } else {
-            deviceInfo.setCipher(cipher);
         }
+        deviceInfo.setCipher(cipher);
     }
 
     private void checkStartTime(String timeFromFile) {
@@ -180,4 +179,18 @@ public class ReportHandler extends DefaultHandler {
         deviceInfo.setStartTime(time);
     }
 
+    private WorkingMode checkMode(String modeFromFile) {
+        Integer modeNumber = null;
+        try {
+            modeNumber = Integer.parseInt(modeFromFile);
+        } catch (NumberFormatException e) {
+        }
+        WorkingMode mode = MockStarter.findModeByNumber(modeNumber);
+        if (mode == null) {
+            sb.append("Некорректно указан <Режимы_работы_ТС>. Режимы_работы_ТС \"").append(modeFromFile).append("\" не найден в базе;\n");
+            changeStatus();
+            return null;
+        }
+        return mode;
+    }
 }

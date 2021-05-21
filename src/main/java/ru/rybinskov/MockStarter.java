@@ -1,18 +1,18 @@
-package ru.rybinskov.dao;
+package ru.rybinskov;
 
 import ru.rybinskov.entity.*;
 import ru.rybinskov.service.ParsingService.ParsingServiceImpl;
 import ru.rybinskov.service.SubscribeService.ParseResultListener;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public final class MockDB {
+public final class MockStarter {
     private static final List<Report> reportList = new ArrayList<>();
     private static final List<Addressee> addresseeList = new ArrayList<>();
     private static final List<Type> typeList = new ArrayList<>();
     private static final List<Cipher> cipherList = new ArrayList<>();
     private static final List<WorkingMode> workingModeList = new ArrayList<>();
-
 
     static {
         Addressee addressee1 = new Addressee("ЦУП");
@@ -41,7 +41,7 @@ public final class MockDB {
     public static void main(String[] args) {
         String filePath;
         try {
-            for (int i = 1; i < 2; i++) {
+            for (int i = 1; i < 5; i++) {
                 filePath = "src/main/resources/file" + i + ".xml";
                 ParsingServiceImpl parsingService1 = new ParsingServiceImpl(filePath, "Report");
                 parsingService1.getReportHandler().events.subscribe(new ParseResultListener());
@@ -52,25 +52,8 @@ public final class MockDB {
         }
     }
 
-
     public static List<Report> getReportList() {
         return reportList;
-    }
-
-    public static List<Addressee> getAddresseeList() {
-        return addresseeList;
-    }
-
-    public static List<Type> getTypeList() {
-        return typeList;
-    }
-
-    public static List<Cipher> getCipherList() {
-        return cipherList;
-    }
-
-    public static List<WorkingMode> getWorkingModeList() {
-        return workingModeList;
     }
 
     public static Addressee findAddresseeByName(String name) {
@@ -95,6 +78,15 @@ public final class MockDB {
         for (Cipher cipher : cipherList) {
             if (cipher.getCipher().equals(name)) {
                 return cipher;
+            }
+        }
+        return null;
+    }
+
+    public static WorkingMode findModeByNumber(Integer number) {
+        for (WorkingMode mode : workingModeList) {
+            if (mode.getMode().equals(number)) {
+                return mode;
             }
         }
         return null;
